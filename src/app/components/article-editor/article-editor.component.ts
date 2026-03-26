@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticlesService } from '../../services/articles.service';
 import { AnnotationsService } from '../../services/annotations.service';
-import { Article } from '../../models/article';
 import { Annotation } from '../../models/annotation';
 import { ParseMarkedContentResult, ParsedAnnotation } from '../../models/annotation-parser';
 
@@ -27,6 +26,10 @@ export class ArticleEditorComponent implements OnInit {
   isEditMode = false;
   articleId: string | null = null;
   annotations: Annotation[] = [];
+  hasChanges = signal(false);
+
+  private originalTitle = '';
+  private originalContentMarks = '';
 
   ngOnInit(): void {
     this.articleId = this.route.snapshot.paramMap.get('id');
@@ -39,10 +42,40 @@ export class ArticleEditorComponent implements OnInit {
         this.content.set(article.content);
         this.annotations = this.annotationsService.getByArticleId(this.articleId);
         this.contentWithMarks.set(this.convertToMarkedContent(article.content, this.annotations));
+        this.originalTitle = article.title;
+        this.originalContentMarks = this.contentWithMarks();
       } else {
         this.router.navigate(['/']);
       }
     }
+  }
+
+  onContentInput(event: Event): void {
+    const target = event.target as HTMLTextAreaElement;
+    this.contentWithMarks.set(target.value);
+    this.checkChanges();
+  }
+
+  goToViewMode(): void {
+    if (!this.articleId) {
+      this.router.navigate(['/']);
+      return;
+    }
+
+    if (this.hasChanges()) {
+      const confirmNavigate = confirm(
+        'У вас есть несохранённые изменения. Перейти в режим просмотра без сохранения?'
+      );
+      if (!confirmNavigate) return;
+    }
+
+    this.router.navigate(['/article', this.articleId]);
+  }
+
+  checkChanges(): void {
+    const titleChanged = this.title() !== this.originalTitle;
+    const contentChanged = this.contentWithMarks() !== this.originalContentMarks;
+    this.hasChanges.set(titleChanged || contentChanged);
   }
 
   /**
@@ -59,12 +92,12 @@ export class ArticleEditorComponent implements OnInit {
       const before = result.substring(0, ann.startOffset);
       const highlighted = result.substring(ann.startOffset, ann.endOffset);
       const after = result.substring(ann.endOffset);
-      
+
       // Получаем короткое имя цвета
       const colorName = ann.color.replace('highlight_', '');
       // Экранируем кавычки в тексте подсказки
       const annotationText = ann.text.replace(/"/g, '\\"');
-      
+
       result = before + `[${highlighted}](*${colorName} "${annotationText}")` + after;
     }
 
@@ -155,7 +188,7 @@ export class ArticleEditorComponent implements OnInit {
 
     // Парсим размеченный контент
     const parsed = this.parseMarkedContent(this.contentWithMarks());
-    
+
     if ('error' in parsed) {
       alert('Ошибка в разметке:\n' + parsed.error);
       return;
@@ -183,6 +216,10 @@ export class ArticleEditorComponent implements OnInit {
           text: newAnn.tooltip
         });
       }
+      // Обновляем оригинальные значения после сохранения
+      this.originalTitle = this.title();
+      this.originalContentMarks = this.contentWithMarks();
+      this.hasChanges.set(false);
     } else {
       const article = this.articlesService.create({
         title: this.title(),
@@ -202,10 +239,5 @@ export class ArticleEditorComponent implements OnInit {
     }
 
     this.router.navigate(['/article', this.articleId]);
-  }
-
-  onContentInput(event: Event): void {
-    const target = event.target as HTMLTextAreaElement;
-    this.contentWithMarks.set(target.value);
   }
 }

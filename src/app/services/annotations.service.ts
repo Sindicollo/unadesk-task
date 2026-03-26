@@ -51,12 +51,10 @@ export class AnnotationsService {
   create(articleId: string, newAnnotation: NewAnnotation): Annotation {
     const annotation: Annotation = {
       id: this.generateId(),
-      articleId,
       startOffset: newAnnotation.startOffset,
       endOffset: newAnnotation.endOffset,
       color: newAnnotation.color,
-      text: newAnnotation.text,
-      createdAt: Date.now()
+      text: newAnnotation.text
     };
 
     this.annotationsSignal.update(map => {
