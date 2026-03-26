@@ -98,6 +98,33 @@
   box-shadow: $shadow-sm;
 }
 
+.annotation-hint {
+  margin-top: $spacing-xl;
+  padding: $spacing-lg;
+  background: $background;
+  border: 1px dashed $border;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+
+  .hint-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: $font-sm;
+    color: $text-secondary;
+    line-height: 1.5;
+
+    strong {
+      color: $text-primary;
+    }
+  }
+}
+
 .article-content {
   font-size: $font-lg;
   line-height: 1.8;

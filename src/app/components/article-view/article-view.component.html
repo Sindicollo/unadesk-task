@@ -35,6 +35,16 @@
         <p class="tooltip-text">{{ activeTooltip.text || 'Без текста' }}</p>
         <span class="tooltip-color" [class]="activeTooltip.color"></span>
       </div>
+
+      @if (annotations().length === 0) {
+        <div class="annotation-hint">
+          <span class="hint-icon">💡</span>
+          <p>
+            <strong>Создайте аннотацию:</strong> выделите текст мышкой и нажмите правую кнопку,
+            или кликните на уже размеченный фрагмент для редактирования.
+          </p>
+        </div>
+      }
     </div>
 
     @if (annotations().length > 0) {
