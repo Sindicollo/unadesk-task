@@ -24,6 +24,8 @@
         (mouseup)="onContentMouseUp($event)"
         (contextmenu)="onContentContextMenu($event)"
         (click)="onHighlightClick($event)"
+        (mouseover)="onContentMouseOver($event)"
+        (mouseout)="onContentMouseOut($event)"
       ></div>
 
       <div 
@@ -33,7 +35,6 @@
         [style.top.px]="tooltipPosition.y"
       >
         <p class="tooltip-text">{{ activeTooltip.text || 'Без текста' }}</p>
-        <span class="tooltip-color" [class]="activeTooltip.color"></span>
       </div>
 
       @if (annotations().length === 0) {

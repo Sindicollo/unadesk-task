@@ -242,18 +242,38 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
     this.annotationText.set(text);
   }
 
-  onHighlightMouseEnter(event: MouseEvent, annotation: Annotation): void {
+  onContentMouseOver(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    const rect = target.getBoundingClientRect();
+    const highlight = target.closest('.highlight');
 
-    this.activeTooltip = annotation;
-    this.tooltipPosition = {
-      x: rect.left + rect.width / 2,
-      y: rect.top - 10
-    };
+    if (!highlight) return;
+
+    const annotationId = highlight.getAttribute('data-annotation-id');
+    if (!annotationId) return;
+
+    const annotation = this.annotations().find(ann => ann.id === annotationId);
+    if (annotation) {
+      const rect = highlight.getBoundingClientRect();
+      this.activeTooltip = annotation;
+      this.tooltipPosition = {
+        x: rect.left + rect.width / 2,
+        y: rect.top - 10
+      };
+    }
   }
 
-  onHighlightMouseLeave(): void {
+  onContentMouseOut(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const highlight = target.closest('.highlight');
+
+    if (!highlight) return;
+
+    // Проверяем, что мышь действительно ушла с элемента, а не на дочерний
+    const relatedTarget = event.relatedTarget as HTMLElement;
+    if (relatedTarget && relatedTarget.closest('.highlight')) {
+      return;
+    }
+
     this.activeTooltip = null;
   }
 }
