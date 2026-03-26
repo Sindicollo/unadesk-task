@@ -6,6 +6,7 @@ import { ArticlesService } from '../../services/articles.service';
 import { AnnotationsService } from '../../services/annotations.service';
 import { Article } from '../../models/article';
 import { Annotation } from '../../models/annotation';
+import { ParseMarkedContentResult, ParsedAnnotation } from '../../models/annotation-parser';
 
 @Component({
   selector: 'app-article-editor',
@@ -74,8 +75,8 @@ export class ArticleEditorComponent implements OnInit {
    * Парсит размеченный контент и возвращает чистый текст + аннотации
    * Формат: [текст](*цвет "подсказка")
    */
-  private parseMarkedContent(markedText: string): { text: string; annotations: Annotation[] } | { error: string } {
-    const annotations: Annotation[] = [];
+  private parseMarkedContent(markedText: string): ParseMarkedContentResult {
+    const annotations: ParsedAnnotation[] = [];
     let result = '';
     
     // Паттерн для поиска [текст](*цвет "подсказка")
@@ -103,13 +104,11 @@ export class ArticleEditorComponent implements OnInit {
       
       // Создаём аннотацию
       annotations.push({
-        id: this.generateId(),
-        articleId: '',
+        text: annotationText,
         startOffset: result.length,
         endOffset: result.length + annotationText.length,
         color: `highlight_${colorName}`,
-        text: tooltip,
-        createdAt: Date.now()
+        tooltip
       });
 
       // Добавляем текст аннотации
@@ -181,7 +180,7 @@ export class ArticleEditorComponent implements OnInit {
           startOffset: newAnn.startOffset,
           endOffset: newAnn.endOffset,
           color: newAnn.color,
-          text: newAnn.text
+          text: newAnn.tooltip
         });
       }
     } else {
@@ -197,7 +196,7 @@ export class ArticleEditorComponent implements OnInit {
           startOffset: newAnn.startOffset,
           endOffset: newAnn.endOffset,
           color: newAnn.color,
-          text: newAnn.text
+          text: newAnn.tooltip
         });
       }
     }

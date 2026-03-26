@@ -38,17 +38,6 @@ export class AnnotationPanelComponent {
     { value: 'highlight_cyan', label: 'Голубой' }
   ];
 
-  readonly colorValues: Record<string, string> = {
-    'highlight_yellow': '#fbbf24',
-    'highlight_red': '#f87171',
-    'highlight_blue': '#60a5fa',
-    'highlight_green': '#34d399',
-    'highlight_purple': '#a78bfa',
-    'highlight_pink': '#f472b6',
-    'highlight_orange': '#fb923c',
-    'highlight_cyan': '#22d3ee'
-  };
-
   onColorSelect(color: string): void {
     this.colorSelected.emit(color);
   }
