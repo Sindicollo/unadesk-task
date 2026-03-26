@@ -1,0 +1,90 @@
+<div class="article-view-container" *ngIf="article()">
+  <header class="header">
+    <div class="header-left">
+      <a routerLink="/" class="btn btn-secondary">← Назад</a>
+      <h1>{{ article()?.title }}</h1>
+    </div>
+    <div class="header-actions">
+      <a [routerLink]="['/edit', article()?.id]" class="btn btn-primary">Редактировать</a>
+    </div>
+  </header>
+
+  <div class="article-meta">
+    <span class="date">Создана: {{ article()?.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+    <span class="date" *ngIf="article()?.updatedAt !== article()?.createdAt">
+      (обновлена: {{ article()?.updatedAt | date:'dd.MM.yyyy HH:mm' }})
+    </span>
+  </div>
+
+  <div class="content-wrapper">
+    <div 
+      class="article-content"
+      [innerHTML]="renderedContent()"
+      (mouseup)="onContentMouseUp($event)"
+    ></div>
+
+    <div 
+      class="tooltip" 
+      *ngIf="activeTooltip"
+      [style.left.px]="tooltipPosition.x"
+      [style.top.px]="tooltipPosition.y"
+    >
+      <p class="tooltip-text">{{ activeTooltip.text || 'Без текста' }}</p>
+      <span class="tooltip-color" [style.background-color]="activeTooltip.color"></span>
+    </div>
+  </div>
+
+  @if (annotations().length > 0) {
+    <div class="annotations-panel">
+      <h3>Аннотации ({{ annotations().length }})</h3>
+      <div class="annotations-list">
+        @for (ann of annotations(); track ann.id) {
+          <div class="annotation-item">
+            <div class="annotation-color" [style.background-color]="ann.color"></div>
+            <div class="annotation-content">
+              <p class="annotation-text">{{ ann.text || 'Без текста' }}</p>
+              <span class="annotation-range">{{ ann.startOffset }} - {{ ann.endOffset }}</span>
+            </div>
+            <button class="btn-delete" (click)="deleteAnnotation(ann.id)" title="Удалить">×</button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="annotation-dialog-overlay" *ngIf="showAnnotationDialog">
+    <div class="annotation-dialog">
+      <h3>Создать аннотацию</h3>
+      
+      <div class="color-picker">
+        <label>Цвет:</label>
+        <div class="color-options">
+          @for (color of colorOptions; track color) {
+            <button
+              type="button"
+              class="color-option"
+              [class.selected]="color === selectedColor"
+              [style.background-color]="color"
+              (click)="selectColor(color)"
+            ></button>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="annotation-text">Текст аннотации (необязательно)</label>
+        <textarea
+          id="annotation-text"
+          [(ngModel)]="annotationText"
+          placeholder="Введите примечание к выделенному тексту"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelSelection()">Отмена</button>
+        <button type="button" class="btn btn-primary" (click)="saveAnnotation()">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>

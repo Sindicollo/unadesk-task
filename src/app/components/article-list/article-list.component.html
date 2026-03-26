@@ -1,0 +1,40 @@
+<div class="article-list-container">
+  <header class="header">
+    <h1>Статьи</h1>
+    <a routerLink="/new" class="btn btn-primary">
+      <span class="icon">+</span> Новая статья
+    </a>
+  </header>
+
+  @if (hasArticles()) {
+    <div class="articles-grid">
+      @for (article of articles(); track article.id) {
+        <div class="article-card">
+          <h2 class="article-title">
+            <a [routerLink]="['/article', article.id]">{{ article.title }}</a>
+          </h2>
+          <p class="article-preview">{{ article.content | slice:0:150 }}{{ article.content.length > 150 ? '...' : '' }}</p>
+          <div class="article-meta">
+            <span class="date">{{ article.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+          </div>
+          <div class="article-actions">
+            <a [routerLink]="['/article', article.id]" class="btn btn-secondary">
+              Открыть
+            </a>
+            <a [routerLink]="['/edit', article.id]" class="btn btn-secondary">
+              Редактировать
+            </a>
+            <button (click)="deleteArticle(article)" class="btn btn-danger">
+              Удалить
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>Нет статей</p>
+      <p>Создайте первую статью, нажав на кнопку выше</p>
+    </div>
+  }
+</div>

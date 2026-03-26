@@ -1,0 +1,147 @@
+.article-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #333;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.btn-primary {
+    background-color: #4f46e5;
+    color: white;
+
+    &:hover {
+      background-color: #4338ca;
+    }
+  }
+
+  &.btn-secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+
+    &:hover {
+      background-color: #e5e7eb;
+    }
+  }
+
+  &.btn-danger {
+    background-color: #fee2e2;
+    color: #dc2626;
+
+    &:hover {
+      background-color: #fecaca;
+    }
+  }
+}
+
+.icon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.article-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.article-title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+
+  a {
+    color: #1f2937;
+    text-decoration: none;
+
+    &:hover {
+      color: #4f46e5;
+    }
+  }
+}
+
+.article-preview {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.article-meta {
+  margin-bottom: 16px;
+}
+
+.date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.article-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  flex-wrap: wrap;
+
+  .btn {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+
+  p {
+    margin: 8px 0;
+  }
+}
