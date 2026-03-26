@@ -21,6 +21,17 @@
   }
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.header-actions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

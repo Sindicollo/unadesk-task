@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticlesService } from '../../services/articles.service';
 import { AnnotationsService } from '../../services/annotations.service';
 import { Article } from '../../models/article';
@@ -11,7 +11,7 @@ import { ParseMarkedContentResult, ParsedAnnotation } from '../../models/annotat
 @Component({
   selector: 'app-article-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './article-editor.component.html',
   styleUrl: './article-editor.component.scss'
 })
@@ -202,14 +202,6 @@ export class ArticleEditorComponent implements OnInit {
     }
 
     this.router.navigate(['/article', this.articleId]);
-  }
-
-  cancel(): void {
-    if (this.articleId) {
-      this.router.navigate(['/article', this.articleId]);
-    } else {
-      this.router.navigate(['/']);
-    }
   }
 
   onContentInput(event: Event): void {

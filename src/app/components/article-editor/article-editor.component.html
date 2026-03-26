@@ -1,7 +1,12 @@
 <div class="editor-container">
   <header class="header">
-    <h1>{{ isEditMode ? 'Редактирование статьи' : 'Новая статья' }}</h1>
-    <button type="button" (click)="cancel()" class="btn btn-secondary">Назад</button>
+    <div class="header-left">
+      <a routerLink="/" class="btn btn-secondary">← Назад</a>
+      <h1>{{ isEditMode ? 'Редактирование статьи' : 'Новая статья' }}</h1>
+    </div>
+    <div class="header-actions">
+      <a [routerLink]="['/article', articleId]" class="btn btn-primary">Режим просмотра</a>
+    </div>
   </header>
 
   <div class="editor-content">
@@ -53,7 +58,7 @@
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn btn-secondary" (click)="cancel()">Отмена</button>
+      <a routerLink="/" class="btn btn-secondary">Отмена</a>
       <button type="button" class="btn btn-primary" (click)="save()">Сохранить</button>
     </div>
   </div>
