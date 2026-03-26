@@ -1,65 +1,67 @@
+@use '../../../styles/variables' as *;
+
 .article-list-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: $spacing-xl;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: $spacing-3xl;
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $border;
 
   h1 {
     margin: 0;
-    font-size: 28px;
-    color: #333;
+    font-size: $font-2xl;
+    color: $text-primary;
   }
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: $spacing-xs;
+  padding: $spacing-md $spacing-xl;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: $radius-sm;
+  font-size: $font-md;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color $transition-normal, transform $transition-fast;
 
   &:active {
     transform: scale(0.98);
   }
 
   &.btn-primary {
-    background-color: #4f46e5;
+    background-color: $primary;
     color: white;
 
     &:hover {
-      background-color: #4338ca;
+      background-color: $primary-hover;
     }
   }
 
   &.btn-secondary {
-    background-color: #f3f4f6;
-    color: #374151;
+    background-color: $secondary;
+    color: $text-secondary;
 
     &:hover {
-      background-color: #e5e7eb;
+      background-color: $secondary-hover;
     }
   }
 
   &.btn-danger {
-    background-color: #fee2e2;
-    color: #dc2626;
+    background-color: $danger;
+    color: $danger-text;
 
     &:hover {
-      background-color: #fecaca;
+      background-color: $danger-hover;
     }
   }
 }
@@ -72,58 +74,58 @@
 .articles-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  gap: $spacing-xl;
 }
 
 .article-card {
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-sm;
+  transition: box-shadow $transition-normal;
   display: flex;
   flex-direction: column;
   min-height: 280px;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-md;
   }
 }
 
 .article-title {
-  margin: 0 0 12px 0;
-  font-size: 18px;
+  margin: 0 0 $spacing-lg 0;
+  font-size: $font-xl;
 
   a {
-    color: #1f2937;
+    color: $text-primary;
     text-decoration: none;
 
     &:hover {
-      color: #4f46e5;
+      color: $primary;
     }
   }
 }
 
 .article-preview {
-  margin: 0 0 16px 0;
-  font-size: 14px;
-  color: #6b7280;
+  margin: 0 0 $spacing-lg 0;
+  font-size: $font-md;
+  color: $text-muted;
   line-height: 1.6;
 }
 
 .article-meta {
-  margin-bottom: 16px;
+  margin-bottom: $spacing-lg;
 }
 
 .date {
-  font-size: 12px;
-  color: #9ca3af;
+  font-size: $font-xs;
+  color: $text-light;
 }
 
 .article-actions {
   display: flex;
-  gap: 10px;
+  gap: $spacing-sm;
   margin-top: auto;
   flex-wrap: wrap;
 
@@ -131,17 +133,17 @@
     flex: 1;
     min-width: 0;
     justify-content: center;
-    padding: 8px 12px;
-    font-size: 13px;
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-sm;
   }
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px 20px;
-  color: #9ca3af;
+  padding: 60px $spacing-xl;
+  color: $text-light;
 
   p {
-    margin: 8px 0;
+    margin: $spacing-xs 0;
   }
 }

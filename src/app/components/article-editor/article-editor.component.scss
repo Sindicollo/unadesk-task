@@ -1,56 +1,58 @@
+@use '../../../styles/variables' as *;
+
 .editor-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
+  padding: $spacing-xl;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: $spacing-3xl;
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $border;
 
   h1 {
     margin: 0;
-    font-size: 28px;
-    color: #333;
+    font-size: $font-2xl;
+    color: $text-primary;
   }
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: $spacing-xs;
+  padding: $spacing-md $spacing-xl;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: $radius-sm;
+  font-size: $font-md;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color $transition-normal, transform $transition-fast;
 
   &:active {
     transform: scale(0.98);
   }
 
   &.btn-primary {
-    background-color: #4f46e5;
+    background-color: $primary;
     color: white;
 
     &:hover {
-      background-color: #4338ca;
+      background-color: $primary-hover;
     }
   }
 
   &.btn-secondary {
-    background-color: #f3f4f6;
-    color: #374151;
+    background-color: $secondary;
+    color: $text-secondary;
 
     &:hover {
-      background-color: #e5e7eb;
+      background-color: $secondary-hover;
     }
   }
 }
@@ -58,32 +60,32 @@
 .editor-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: $spacing-2xl;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: $spacing-xs;
 
   label {
-    font-size: 14px;
+    font-size: $font-md;
     font-weight: 500;
-    color: #374151;
+    color: $text-secondary;
   }
 }
 
 .form-control {
-  padding: 12px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: $spacing-md $spacing-lg;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  font-size: $font-lg;
   font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color $transition-normal, box-shadow $transition-normal;
 
   &:focus {
     outline: none;
-    border-color: #4f46e5;
+    border-color: $primary;
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   }
 
@@ -96,8 +98,8 @@
 
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: $spacing-md;
   justify-content: flex-end;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  padding-top: $spacing-xl;
+  border-top: 1px solid $border;
 }

@@ -1,7 +1,9 @@
+@use '../../../styles/variables' as *;
+
 .article-view-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
+  padding: $spacing-xl;
   position: relative;
 }
 
@@ -9,90 +11,90 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $border;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: $spacing-lg;
 
   h1 {
     margin: 0;
-    font-size: 28px;
-    color: #333;
+    font-size: $font-2xl;
+    color: $text-primary;
   }
 }
 
 .header-actions {
   display: flex;
-  gap: 10px;
+  gap: $spacing-sm;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: $spacing-xs;
+  padding: $spacing-md $spacing-xl;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: $radius-sm;
+  font-size: $font-md;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color $transition-normal, transform $transition-fast;
 
   &:active {
     transform: scale(0.98);
   }
 
   &.btn-primary {
-    background-color: #4f46e5;
+    background-color: $primary;
     color: white;
 
     &:hover {
-      background-color: #4338ca;
+      background-color: $primary-hover;
     }
   }
 
   &.btn-secondary {
-    background-color: #f3f4f6;
-    color: #374151;
+    background-color: $secondary;
+    color: $text-secondary;
     text-decoration: none;
 
     &:hover {
-      background-color: #e5e7eb;
+      background-color: $secondary-hover;
     }
   }
 }
 
 .article-meta {
-  margin-bottom: 24px;
+  margin-bottom: $spacing-2xl;
   display: flex;
-  gap: 12px;
+  gap: $spacing-lg;
 }
 
 .date {
-  font-size: 13px;
-  color: #9ca3af;
+  font-size: $font-sm;
+  color: $text-light;
 }
 
 .content-wrapper {
   position: relative;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
   padding: 32px;
   min-height: 400px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-sm;
 }
 
 .article-content {
-  font-size: 16px;
+  font-size: $font-lg;
   line-height: 1.8;
-  color: #1f2937;
+  color: $text-primary;
   white-space: pre-wrap;
   word-wrap: break-word;
 
@@ -100,7 +102,7 @@
     padding: 2px 0;
     border-radius: 3px;
     cursor: pointer;
-    transition: filter 0.2s;
+    transition: filter $transition-normal;
 
     &:hover {
       filter: brightness(0.95);
@@ -111,15 +113,15 @@
 .tooltip {
   position: fixed;
   transform: translate(-50%, -100%);
-  background: #1f2937;
+  background: $text-primary;
   color: white;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-md;
+  font-size: $font-md;
   max-width: 300px;
   z-index: 1000;
   pointer-events: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: $shadow-lg;
 
   &::after {
     content: '';
@@ -128,11 +130,11 @@
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: #1f2937;
+    border-top-color: $text-primary;
   }
 
   .tooltip-text {
-    margin: 0 0 6px 0;
+    margin: 0 0 $spacing-xs 0;
     line-height: 1.4;
   }
 
@@ -145,33 +147,33 @@
 }
 
 .annotations-panel {
-  margin-top: 30px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
+  margin-top: $spacing-3xl;
+  background: $background;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
 
   h3 {
-    margin: 0 0 16px 0;
-    font-size: 16px;
-    color: #374151;
+    margin: 0 0 $spacing-lg 0;
+    font-size: $font-lg;
+    color: $text-secondary;
   }
 }
 
 .annotations-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $spacing-md;
 }
 
 .annotation-item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px;
+  gap: $spacing-md;
+  padding: $spacing-md;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid $border;
+  border-radius: $radius-md;
 }
 
 .annotation-color {
@@ -188,30 +190,30 @@
 }
 
 .annotation-text {
-  margin: 0 0 6px 0;
-  font-size: 14px;
-  color: #1f2937;
+  margin: 0 0 $spacing-xs 0;
+  font-size: $font-md;
+  color: $text-primary;
   word-wrap: break-word;
 }
 
 .annotation-range {
-  font-size: 12px;
-  color: #9ca3af;
+  font-size: $font-xs;
+  color: $text-light;
 }
 
 .btn-delete {
   background: none;
   border: none;
   font-size: 20px;
-  color: #9ca3af;
+  color: $text-light;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s, color 0.2s;
+  padding: 4px $spacing-xs;
+  border-radius: $radius-sm;
+  transition: background-color $transition-normal, color $transition-normal;
 
   &:hover {
-    background-color: #fee2e2;
-    color: #dc2626;
+    background-color: $danger;
+    color: $danger-text;
   }
 }
 
@@ -230,79 +232,79 @@
 
 .annotation-dialog {
   background: white;
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: $radius-lg;
+  padding: $spacing-2xl;
   width: 100%;
   max-width: 450px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: $shadow-lg;
 
   h3 {
-    margin: 0 0 20px 0;
-    font-size: 18px;
-    color: #1f2937;
+    margin: 0 0 $spacing-2xl 0;
+    font-size: $font-xl;
+    color: $text-primary;
   }
 }
 
 .color-picker {
-  margin-bottom: 20px;
+  margin-bottom: $spacing-2xl;
 
   label {
     display: block;
-    font-size: 14px;
+    font-size: $font-md;
     font-weight: 500;
-    color: #374151;
-    margin-bottom: 10px;
+    color: $text-secondary;
+    margin-bottom: $spacing-md;
   }
 }
 
 .color-options {
   display: flex;
-  gap: 10px;
+  gap: $spacing-sm;
   flex-wrap: wrap;
 }
 
 .color-option {
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: $radius-md;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: transform 0.1s, border-color 0.2s;
+  transition: transform $transition-fast, border-color $transition-normal;
 
   &:hover {
     transform: scale(1.1);
   }
 
   &.selected {
-    border-color: #1f2937;
+    border-color: $text-primary;
     transform: scale(1.1);
   }
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: $spacing-2xl;
 
   label {
     display: block;
-    font-size: 14px;
+    font-size: $font-md;
     font-weight: 500;
-    color: #374151;
-    margin-bottom: 8px;
+    color: $text-secondary;
+    margin-bottom: $spacing-xs;
   }
 
   textarea {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: $spacing-md;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    font-size: $font-md;
     font-family: inherit;
     resize: vertical;
     box-sizing: border-box;
 
     &:focus {
       outline: none;
-      border-color: #4f46e5;
+      border-color: $primary;
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
   }
@@ -310,6 +312,6 @@
 
 .dialog-actions {
   display: flex;
-  gap: 12px;
+  gap: $spacing-md;
   justify-content: flex-end;
 }
