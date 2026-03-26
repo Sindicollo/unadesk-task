@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ArticlesService } from '../../services/articles.service';
 import { AnnotationsService } from '../../services/annotations.service';
 import { Article } from '../../models/article';
@@ -22,12 +23,13 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
   private annotationsService = inject(AnnotationsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private sanitizer = inject(DomSanitizer);
 
   private destroy$ = new Subject<void>();
 
   article = signal<Article | null>(null);
   annotations = signal<Annotation[]>([]);
-  renderedContent = signal<string>('');
+  renderedContent = signal<SafeHtml>('');
 
   // UI для создания аннотаций
   selectedColor = 'highlight_yellow';
@@ -89,7 +91,7 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
     }
 
     result += this.escapeHtml(article.content.substring(lastIndex));
-    this.renderedContent.set(result);
+    this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(result));
   }
 
   private escapeHtml(text: string): string {
