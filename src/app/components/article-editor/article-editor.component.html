@@ -21,16 +21,35 @@
       <label for="content">Содержание</label>
       <textarea
         id="content"
-        [ngModel]="content()"
-        (ngModelChange)="content.set($event)"
-        placeholder="Введите текст статьи"
+        [ngModel]="contentWithMarks()"
+        (input)="onContentInput($event)"
+        placeholder="Введите текст статьи. Аннотации: [текст](*цвет &quot;подсказка&quot;)"
         rows="20"
         class="form-control textarea"
       ></textarea>
-      <p class="hint">
-        💡 Аннотации можно создавать после сохранения статьи в режиме просмотра.
-        Выделите текст и нажмите правую кнопку мыши.
-      </p>
+      
+      <div class="annotation-format-help">
+        <h4>Формат аннотаций:</h4>
+        <p>
+          Используйте синтаксис <code>[текст](*цвет "подсказка")</code> для создания аннотаций.
+          Подсказка необязательна и должна быть в кавычках.
+        </p>
+        <div class="color-examples">
+          <span class="example"><code>[пример](*yellow "подсказка")</code> — жёлтый</span>
+          <span class="example"><code>[пример](*red "")</code> — красный (без подсказки)</span>
+          <span class="example"><code>[пример](*blue)</code> — синий (пустая подсказка)</span>
+          <span class="example"><code>[пример](*green "Текст")</code> — зелёный</span>
+          <span class="example"><code>[пример](*purple)</code> — фиолетовый</span>
+          <span class="example"><code>[пример](*pink)</code> — розовый</span>
+          <span class="example"><code>[пример](*orange)</code> — оранжевый</span>
+          <span class="example"><code>[пример](*cyan)</code> — голубой</span>
+        </div>
+        @if (annotations.length > 0) {
+          <p class="existing-annotations">
+            Найдено аннотаций: <strong>{{ annotations.length }}</strong>
+          </p>
+        }
+      </div>
     </div>
 
     <div class="form-actions">

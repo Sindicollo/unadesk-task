@@ -93,14 +93,71 @@
     resize: vertical;
     min-height: 400px;
     line-height: 1.6;
+    font-family: 'Consolas', 'Monaco', monospace;
   }
 }
 
-.hint {
-  margin: $spacing-xs 0 0 0;
+.annotation-format-help {
+  background: $background;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-top: $spacing-sm;
+
+  h4 {
+    margin: 0 0 $spacing-md 0;
+    font-size: $font-md;
+    color: $text-secondary;
+  }
+
+  p {
+    margin: 0 0 $spacing-md 0;
+    font-size: $font-sm;
+    color: $text-muted;
+
+    code {
+      background: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: $font-sm;
+    }
+  }
+}
+
+.color-examples {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-sm;
+
+  .example {
+    font-size: $font-sm;
+    color: $text-muted;
+
+    code {
+      background: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: $font-sm;
+      border: 1px solid $border;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.existing-annotations {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $border;
   font-size: $font-sm;
-  color: $text-light;
-  font-style: italic;
+  color: $text-secondary;
+
+  strong {
+    color: $primary;
+  }
 }
 
 .form-actions {
