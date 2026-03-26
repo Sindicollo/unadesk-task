@@ -1,17 +1,17 @@
 <div class="editor-container">
   <header class="header">
     <h1>{{ isEditMode ? 'Редактирование статьи' : 'Новая статья' }}</h1>
-    <a routerLink="/" class="btn btn-secondary">Назад к списку</a>
+    <button type="button" (click)="cancel()" class="btn btn-secondary">Назад</button>
   </header>
 
-  <form (ngSubmit)="save()" class="editor-form">
+  <div class="editor-content">
     <div class="form-group">
       <label for="title">Заголовок</label>
       <input
         id="title"
         type="text"
-        [(ngModel)]="title"
-        name="title"
+        [ngModel]="title()"
+        (ngModelChange)="title.set($event)"
         placeholder="Введите заголовок статьи"
         class="form-control"
       />
@@ -21,17 +21,21 @@
       <label for="content">Содержание</label>
       <textarea
         id="content"
-        [(ngModel)]="content"
-        name="content"
+        [ngModel]="content()"
+        (ngModelChange)="content.set($event)"
         placeholder="Введите текст статьи"
         rows="20"
         class="form-control textarea"
       ></textarea>
+      <p class="hint">
+        💡 Аннотации можно создавать после сохранения статьи в режиме просмотра.
+        Выделите текст и нажмите правую кнопку мыши.
+      </p>
     </div>
 
     <div class="form-actions">
-      <button type="button" (click)="cancel()" class="btn btn-secondary">Отмена</button>
-      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <button type="button" class="btn btn-secondary" (click)="cancel()">Отмена</button>
+      <button type="button" class="btn btn-primary" (click)="save()">Сохранить</button>
     </div>
-  </form>
+  </div>
 </div>

@@ -68,6 +68,15 @@
       background-color: $secondary-hover;
     }
   }
+
+  &.btn-danger {
+    background-color: $danger;
+    color: $danger-text;
+
+    &:hover {
+      background-color: $danger-hover;
+    }
+  }
 }
 
 .article-meta {
@@ -97,6 +106,7 @@
   color: $text-primary;
   white-space: pre-wrap;
   word-wrap: break-word;
+  user-select: text;
 
   .highlight {
     padding: 2px 0;
@@ -105,7 +115,39 @@
     transition: filter $transition-normal;
 
     &:hover {
-      filter: brightness(0.95);
+      filter: brightness(0.9);
+    }
+
+    &.highlight_yellow {
+      background-color: #fbbf24;
+    }
+
+    &.highlight_red {
+      background-color: #f87171;
+    }
+
+    &.highlight_blue {
+      background-color: #60a5fa;
+    }
+
+    &.highlight_green {
+      background-color: #34d399;
+    }
+
+    &.highlight_purple {
+      background-color: #a78bfa;
+    }
+
+    &.highlight_pink {
+      background-color: #f472b6;
+    }
+
+    &.highlight_orange {
+      background-color: #fb923c;
+    }
+
+    &.highlight_cyan {
+      background-color: #22d3ee;
     }
   }
 }
@@ -143,6 +185,16 @@
     width: 12px;
     height: 12px;
     border-radius: 2px;
+    margin-left: $spacing-xs;
+
+    &.highlight_yellow { background-color: #fbbf24; }
+    &.highlight_red { background-color: #f87171; }
+    &.highlight_blue { background-color: #60a5fa; }
+    &.highlight_green { background-color: #34d399; }
+    &.highlight_purple { background-color: #a78bfa; }
+    &.highlight_pink { background-color: #f472b6; }
+    &.highlight_orange { background-color: #fb923c; }
+    &.highlight_cyan { background-color: #22d3ee; }
   }
 }
 
@@ -182,6 +234,15 @@
   border-radius: 3px;
   flex-shrink: 0;
   margin-top: 2px;
+
+  &.highlight_yellow { background-color: #fbbf24; }
+  &.highlight_red { background-color: #f87171; }
+  &.highlight_blue { background-color: #60a5fa; }
+  &.highlight_green { background-color: #34d399; }
+  &.highlight_purple { background-color: #a78bfa; }
+  &.highlight_pink { background-color: #f472b6; }
+  &.highlight_orange { background-color: #fb923c; }
+  &.highlight_cyan { background-color: #22d3ee; }
 }
 
 .annotation-content {
@@ -201,22 +262,7 @@
   color: $text-light;
 }
 
-.btn-delete {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: $text-light;
-  cursor: pointer;
-  padding: 4px $spacing-xs;
-  border-radius: $radius-sm;
-  transition: background-color $transition-normal, color $transition-normal;
-
-  &:hover {
-    background-color: $danger;
-    color: $danger-text;
-  }
-}
-
+// Annotation dialog
 .annotation-dialog-overlay {
   position: fixed;
   top: 0;
@@ -237,47 +283,39 @@
   width: 100%;
   max-width: 450px;
   box-shadow: $shadow-lg;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xl;
 
   h3 {
-    margin: 0 0 $spacing-2xl 0;
+    margin: 0;
     font-size: $font-xl;
     color: $text-primary;
   }
 }
 
-.color-picker {
-  margin-bottom: $spacing-2xl;
-
-  label {
-    display: block;
-    font-size: $font-md;
-    font-weight: 500;
-    color: $text-secondary;
-    margin-bottom: $spacing-md;
-  }
-}
-
-.color-options {
-  display: flex;
-  gap: $spacing-sm;
-  flex-wrap: wrap;
-}
-
-.color-option {
-  width: 36px;
-  height: 36px;
-  border-radius: $radius-md;
-  border: 2px solid transparent;
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: $text-light;
   cursor: pointer;
-  transition: transform $transition-fast, border-color $transition-normal;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  transition: background-color $transition-normal, color $transition-normal;
 
   &:hover {
-    transform: scale(1.1);
-  }
-
-  &.selected {
-    border-color: $text-primary;
-    transform: scale(1.1);
+    background-color: $secondary;
+    color: $text-primary;
   }
 }
 
@@ -289,29 +327,90 @@
     font-size: $font-md;
     font-weight: 500;
     color: $text-secondary;
-    margin-bottom: $spacing-xs;
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.color-dropdown {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.color-select {
+  flex: 1;
+  padding: $spacing-md;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  font-size: $font-md;
+  font-family: inherit;
+  cursor: pointer;
+  background: white;
+}
+
+.color-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  border: 1px solid $border;
+  flex-shrink: 0;
+
+  &.highlight_yellow { background-color: #fbbf24; }
+  &.highlight_red { background-color: #f87171; }
+  &.highlight_blue { background-color: #60a5fa; }
+  &.highlight_green { background-color: #34d399; }
+  &.highlight_purple { background-color: #a78bfa; }
+  &.highlight_pink { background-color: #f472b6; }
+  &.highlight_orange { background-color: #fb923c; }
+  &.highlight_cyan { background-color: #22d3ee; }
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+}
+
+.color-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: transform $transition-fast, border-color $transition-normal;
+
+  &:hover {
+    transform: scale(1.05);
   }
 
-  textarea {
-    width: 100%;
-    padding: $spacing-md;
-    border: 1px solid $border;
-    border-radius: $radius-md;
-    font-size: $font-md;
-    font-family: inherit;
-    resize: vertical;
-    box-sizing: border-box;
-
-    &:focus {
-      outline: none;
-      border-color: $primary;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    }
+  &.selected {
+    border-color: $text-primary;
+    transform: scale(1.05);
   }
+
+  &.highlight_yellow { background-color: #fbbf24; }
+  &.highlight_red { background-color: #f87171; }
+  &.highlight_blue { background-color: #60a5fa; }
+  &.highlight_green { background-color: #34d399; }
+  &.highlight_purple { background-color: #a78bfa; }
+  &.highlight_pink { background-color: #f472b6; }
+  &.highlight_orange { background-color: #fb923c; }
+  &.highlight_cyan { background-color: #22d3ee; }
+}
+
+.annotation-actions {
+  margin-bottom: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $border;
 }
 
 .dialog-actions {
   display: flex;
   gap: $spacing-md;
-  justify-content: flex-end;
+
+  .btn {
+    flex: 1;
+    justify-content: center;
+  }
 }

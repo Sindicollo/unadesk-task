@@ -1,18 +1,16 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ArticlesService } from '../../services/articles.service';
 import { AnnotationsService } from '../../services/annotations.service';
 import { Article } from '../../models/article';
 import { Annotation, NewAnnotation } from '../../models/annotation';
 
-interface HighlightedText {
-  before: string;
-  highlighted: string;
-  after: string;
-  annotation: Annotation;
+interface ColorOption {
+  value: string;
+  label: string;
 }
 
 @Component({
@@ -20,7 +18,8 @@ interface HighlightedText {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './article-view.component.html',
-  styleUrl: './article-view.component.scss'
+  styleUrl: './article-view.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class ArticleViewComponent implements OnInit, OnDestroy {
   private articlesService = inject(ArticlesService);
@@ -33,18 +32,44 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
   article = signal<Article | null>(null);
   annotations = signal<Annotation[]>([]);
   renderedContent = signal<string>('');
-  
-  selectedColor = '#fbbf24';
-  annotationText = '';
-  showAnnotationDialog = false;
-  pendingSelection: { start: number; end: number } | null = null;
 
+  // UI для создания аннотаций
+  selectedColor = 'highlight_yellow';
+  annotationText = signal('');
+  annotationTextForEdit = '';
+  showAnnotationPanel = signal(false);
+  pendingSelection: { start: number; end: number; text: string } | null = null;
+  selectedAnnotation = signal<Annotation | null>(null);
+
+  // Tooltip
   activeTooltip: Annotation | null = null;
   tooltipPosition = { x: 0, y: 0 };
 
+  readonly colorOptions: ColorOption[] = [
+    { value: 'highlight_yellow', label: 'Жёлтый' },
+    { value: 'highlight_red', label: 'Красный' },
+    { value: 'highlight_blue', label: 'Синий' },
+    { value: 'highlight_green', label: 'Зелёный' },
+    { value: 'highlight_purple', label: 'Фиолетовый' },
+    { value: 'highlight_pink', label: 'Розовый' },
+    { value: 'highlight_orange', label: 'Оранжевый' },
+    { value: 'highlight_cyan', label: 'Голубой' }
+  ];
+
+  readonly colorValues: Record<string, string> = {
+    'highlight_yellow': '#fbbf24',
+    'highlight_red': '#f87171',
+    'highlight_blue': '#60a5fa',
+    'highlight_green': '#34d399',
+    'highlight_purple': '#a78bfa',
+    'highlight_pink': '#f472b6',
+    'highlight_orange': '#fb923c',
+    'highlight_cyan': '#22d3ee'
+  };
+
   ngOnInit(): void {
     const articleId = this.route.snapshot.paramMap.get('id');
-    
+
     if (!articleId) {
       this.router.navigate(['/']);
       return;
@@ -69,24 +94,24 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
   renderContent(): void {
     const article = this.article();
     const annotations = this.annotations();
-    
+
     if (!article) {
       this.renderedContent.set('');
       return;
     }
 
     const sortedAnnotations = [...annotations].sort((a, b) => a.startOffset - b.startOffset);
-    
+
     let result = '';
     let lastIndex = 0;
 
     for (const ann of sortedAnnotations) {
       const before = article.content.substring(lastIndex, ann.startOffset);
       const highlighted = article.content.substring(ann.startOffset, ann.endOffset);
-      
+
       result += this.escapeHtml(before);
-      result += `<span class="highlight" style="background-color: ${ann.color};" data-annotation-id="${ann.id}">${this.escapeHtml(highlighted)}</span>`;
-      
+      result += `<span class="highlight ${ann.color}" data-annotation-id="${ann.id}">${this.escapeHtml(highlighted)}</span>`;
+
       lastIndex = ann.endOffset;
     }
 
@@ -102,14 +127,14 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
 
   onContentMouseUp(event: MouseEvent): void {
     const selection = window.getSelection();
-    
+
     if (!selection || selection.isCollapsed || !selection.rangeCount) {
       return;
     }
 
     const range = selection.getRangeAt(0);
     const contentDiv = event.currentTarget as HTMLElement;
-    
+
     if (!contentDiv.contains(range.commonAncestorContainer)) {
       return;
     }
@@ -122,58 +147,144 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
     preSelectionRange.setEnd(range.startContainer, range.startOffset);
     const start = preSelectionRange.toString().length;
     const end = start + range.toString().length;
+    const selectedText = range.toString();
 
     if (start === end) {
       return;
     }
 
-    this.pendingSelection = { start, end };
-    this.showAnnotationDialog = true;
-    this.annotationText = '';
+    // Проверяем, есть ли уже аннотация в этом диапазоне
+    const existingAnnotation = this.findAnnotationInRange(start, end);
+
+    if (existingAnnotation) {
+      this.selectedAnnotation.set(existingAnnotation);
+      this.selectedColor = existingAnnotation.color;
+      this.annotationText.set(existingAnnotation.text);
+      this.annotationTextForEdit = existingAnnotation.text;
+      this.showAnnotationPanel.set(true);
+      this.pendingSelection = null;
+    } else {
+      this.pendingSelection = { start, end, text: selectedText };
+      this.selectedAnnotation.set(null);
+      this.selectedColor = 'highlight_yellow';
+      this.annotationText.set('');
+      this.annotationTextForEdit = '';
+      this.showAnnotationPanel.set(true);
+    }
+  }
+
+  onContentContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !selection.rangeCount) {
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const contentDiv = event.currentTarget as HTMLElement;
+
+    if (!contentDiv.contains(range.commonAncestorContainer)) {
+      return;
+    }
+
+    // Фокус на поле цвета
+    const colorSelect = document.getElementById('annotation-color-select');
+    if (colorSelect) {
+      colorSelect.focus();
+    }
+  }
+
+  onHighlightClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const highlight = target.closest('.highlight');
+
+    if (!highlight) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const annotationId = highlight.getAttribute('data-annotation-id');
+    if (!annotationId) return;
+
+    const annotation = this.annotations().find(ann => ann.id === annotationId);
+    if (annotation) {
+      this.selectedAnnotation.set(annotation);
+      this.selectedColor = annotation.color;
+      this.annotationText.set(annotation.text);
+      this.annotationTextForEdit = annotation.text;
+      this.showAnnotationPanel.set(true);
+      this.pendingSelection = null;
+    }
+  }
+
+  private findAnnotationInRange(start: number, end: number): Annotation | null {
+    const annotations = this.annotations();
+
+    for (const ann of annotations) {
+      if (start < ann.endOffset && end > ann.startOffset) {
+        return ann;
+      }
+    }
+
+    return null;
   }
 
   saveAnnotation(): void {
-    if (!this.pendingSelection || !this.article()) return;
+    const articleId = this.article()?.id;
+    if (!articleId) return;
 
-    const newAnnotation: NewAnnotation = {
-      startOffset: this.pendingSelection.start,
-      endOffset: this.pendingSelection.end,
-      color: this.selectedColor,
-      text: this.annotationText
-    };
+    if (this.pendingSelection) {
+      const newAnnotation: NewAnnotation = {
+        startOffset: this.pendingSelection.start,
+        endOffset: this.pendingSelection.end,
+        color: this.selectedColor,
+        text: this.annotationText()
+      };
 
-    this.annotationsService.create(this.article()!.id, newAnnotation);
-    this.annotations.set(this.annotationsService.getByArticleId(this.article()!.id));
-    this.renderContent();
-    
-    this.closeAnnotationDialog();
-    window.getSelection()?.removeAllRanges();
+      this.annotationsService.create(articleId, newAnnotation);
+      this.annotations.set(this.annotationsService.getByArticleId(articleId));
+      this.renderContent();
+    } else if (this.selectedAnnotation()) {
+      this.annotationsService.update(
+        articleId,
+        this.selectedAnnotation()!.id,
+        {
+          color: this.selectedColor,
+          text: this.annotationText()
+        }
+      );
+      this.annotations.set(this.annotationsService.getByArticleId(articleId));
+      this.renderContent();
+    }
+
+    this.closeAnnotationPanel();
   }
 
-  closeAnnotationDialog(): void {
-    this.showAnnotationDialog = false;
+  deleteAnnotation(): void {
+    const articleId = this.article()?.id;
+    if (!articleId || !this.selectedAnnotation()) return;
+
+    this.annotationsService.delete(articleId, this.selectedAnnotation()!.id);
+    this.annotations.set(this.annotationsService.getByArticleId(articleId));
+    this.renderContent();
+    this.closeAnnotationPanel();
+  }
+
+  closeAnnotationPanel(): void {
+    this.showAnnotationPanel.set(false);
     this.pendingSelection = null;
-    this.annotationText = '';
-  }
-
-  cancelSelection(): void {
-    this.closeAnnotationDialog();
+    this.selectedAnnotation.set(null);
+    this.selectedColor = 'highlight_yellow';
+    this.annotationText.set('');
+    this.annotationTextForEdit = '';
     window.getSelection()?.removeAllRanges();
-  }
-
-  deleteAnnotation(annotationId: string): void {
-    const article = this.article();
-    if (!article) return;
-
-    this.annotationsService.delete(article.id, annotationId);
-    this.annotations.set(this.annotationsService.getByArticleId(article.id));
-    this.renderContent();
   }
 
   onHighlightMouseEnter(event: MouseEvent, annotation: Annotation): void {
     const target = event.target as HTMLElement;
     const rect = target.getBoundingClientRect();
-    
+
     this.activeTooltip = annotation;
     this.tooltipPosition = {
       x: rect.left + rect.width / 2,
@@ -185,11 +296,12 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
     this.activeTooltip = null;
   }
 
-  get colorOptions(): string[] {
-    return ['#fbbf24', '#f87171', '#60a5fa', '#34d399', '#a78bfa', '#f472b6'];
+  get selectedColorValue(): string {
+    return this.colorValues[this.selectedColor] || '#fbbf24';
   }
 
-  selectColor(color: string): void {
-    this.selectedColor = color;
+  get selectedColorLabel(): string {
+    const option = this.colorOptions.find(c => c.value === this.selectedColor);
+    return option ? option.label : 'Выберите цвет';
   }
 }

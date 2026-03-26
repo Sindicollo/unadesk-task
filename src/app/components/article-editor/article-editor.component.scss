@@ -57,7 +57,7 @@
   }
 }
 
-.editor-form {
+.editor-content {
   display: flex;
   flex-direction: column;
   gap: $spacing-2xl;
@@ -94,6 +94,13 @@
     min-height: 400px;
     line-height: 1.6;
   }
+}
+
+.hint {
+  margin: $spacing-xs 0 0 0;
+  font-size: $font-sm;
+  color: $text-light;
+  font-style: italic;
 }
 
 .form-actions {

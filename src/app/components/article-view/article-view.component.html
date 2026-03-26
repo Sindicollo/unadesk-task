@@ -21,6 +21,8 @@
       class="article-content"
       [innerHTML]="renderedContent()"
       (mouseup)="onContentMouseUp($event)"
+      (contextmenu)="onContentContextMenu($event)"
+      (click)="onHighlightClick($event)"
     ></div>
 
     <div 
@@ -30,7 +32,7 @@
       [style.top.px]="tooltipPosition.y"
     >
       <p class="tooltip-text">{{ activeTooltip.text || 'Без текста' }}</p>
-      <span class="tooltip-color" [style.background-color]="activeTooltip.color"></span>
+      <span class="tooltip-color" [class]="activeTooltip.color"></span>
     </div>
   </div>
 
@@ -40,50 +42,81 @@
       <div class="annotations-list">
         @for (ann of annotations(); track ann.id) {
           <div class="annotation-item">
-            <div class="annotation-color" [style.background-color]="ann.color"></div>
+            <div class="annotation-color" [class]="ann.color"></div>
             <div class="annotation-content">
               <p class="annotation-text">{{ ann.text || 'Без текста' }}</p>
               <span class="annotation-range">{{ ann.startOffset }} - {{ ann.endOffset }}</span>
             </div>
-            <button class="btn-delete" (click)="deleteAnnotation(ann.id)" title="Удалить">×</button>
           </div>
         }
       </div>
     </div>
   }
 
-  <div class="annotation-dialog-overlay" *ngIf="showAnnotationDialog">
+  <div class="annotation-dialog-overlay" *ngIf="showAnnotationPanel()">
     <div class="annotation-dialog">
-      <h3>Создать аннотацию</h3>
-      
-      <div class="color-picker">
-        <label>Цвет:</label>
-        <div class="color-options">
-          @for (color of colorOptions; track color) {
+      <div class="dialog-header">
+        <h3>{{ selectedAnnotation() ? 'Редактировать аннотацию' : 'Новая аннотация' }}</h3>
+        <button type="button" class="btn-close" (click)="closeAnnotationPanel()" title="Закрыть">×</button>
+      </div>
+
+      <div class="form-group">
+        <label for="annotation-color-select">Цвет</label>
+        <div class="color-dropdown">
+          <select
+            id="annotation-color-select"
+            [(ngModel)]="selectedColor"
+            class="form-control color-select"
+          >
+            @for (option of colorOptions; track option.value) {
+              <option [value]="option.value">
+                {{ option.label }}
+              </option>
+            }
+          </select>
+          <div class="color-preview" [class]="selectedColor"></div>
+        </div>
+        <div class="color-grid">
+          @for (option of colorOptions; track option.value) {
             <button
               type="button"
-              class="color-option"
-              [class.selected]="color === selectedColor"
-              [style.background-color]="color"
-              (click)="selectColor(color)"
+              class="color-swatch"
+              [class.selected]="option.value === selectedColor"
+              [class]="option.value"
+              [title]="option.label"
+              (click)="selectedColor = option.value"
             ></button>
           }
         </div>
       </div>
 
       <div class="form-group">
-        <label for="annotation-text">Текст аннотации (необязательно)</label>
+        <label for="annotation-text">Текст аннотации</label>
         <textarea
           id="annotation-text"
-          [(ngModel)]="annotationText"
+          [(ngModel)]="annotationTextForEdit"
+          (ngModelChange)="annotationText.set($event)"
           placeholder="Введите примечание к выделенному тексту"
-          rows="4"
+          rows="5"
+          class="form-control textarea"
         ></textarea>
       </div>
 
+      @if (selectedAnnotation()) {
+        <div class="annotation-actions">
+          <button type="button" class="btn btn-danger" (click)="deleteAnnotation()">
+            Удалить аннотацию
+          </button>
+        </div>
+      }
+
       <div class="dialog-actions">
-        <button type="button" class="btn btn-secondary" (click)="cancelSelection()">Отмена</button>
-        <button type="button" class="btn btn-primary" (click)="saveAnnotation()">Сохранить</button>
+        <button type="button" class="btn btn-secondary" (click)="closeAnnotationPanel()">
+          Отмена
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveAnnotation()">
+          {{ selectedAnnotation() ? 'Сохранить' : 'Создать' }}
+        </button>
       </div>
     </div>
   </div>
