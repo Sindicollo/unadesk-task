@@ -18,13 +18,24 @@ $text-muted: #6b7280;
 $text-light: #9ca3af;
 
 // Highlight colors
+$highlight-yellow: #fbbf24;
+$highlight-red: #f87171;
+$highlight-blue: #60a5fa;
+$highlight-green: #34d399;
+$highlight-purple: #a78bfa;
+$highlight-pink: #f472b6;
+$highlight-orange: #fb923c;
+$highlight-cyan: #22d3ee;
+
 $highlight-colors: (
-  yellow: #fbbf24,
-  red: #f87171,
-  blue: #60a5fa,
-  green: #34d399,
-  purple: #a78bfa,
-  pink: #f472b6
+  yellow: $highlight-yellow,
+  red: $highlight-red,
+  blue: $highlight-blue,
+  green: $highlight-green,
+  purple: $highlight-purple,
+  pink: $highlight-pink,
+  orange: $highlight-orange,
+  cyan: $highlight-cyan
 );
 
 // Shadows

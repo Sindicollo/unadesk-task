@@ -144,35 +144,35 @@
     }
 
     &.highlight_yellow {
-      background-color: #fbbf24;
+      background-color: $highlight-yellow;
     }
 
     &.highlight_red {
-      background-color: #f87171;
+      background-color: $highlight-red;
     }
 
     &.highlight_blue {
-      background-color: #60a5fa;
+      background-color: $highlight-blue;
     }
 
     &.highlight_green {
-      background-color: #34d399;
+      background-color: $highlight-green;
     }
 
     &.highlight_purple {
-      background-color: #a78bfa;
+      background-color: $highlight-purple;
     }
 
     &.highlight_pink {
-      background-color: #f472b6;
+      background-color: $highlight-pink;
     }
 
     &.highlight_orange {
-      background-color: #fb923c;
+      background-color: $highlight-orange;
     }
 
     &.highlight_cyan {
-      background-color: #22d3ee;
+      background-color: $highlight-cyan;
     }
   }
 }
@@ -243,14 +243,14 @@
   flex-shrink: 0;
   margin-top: 2px;
 
-  &.highlight_yellow { background-color: #fbbf24; }
-  &.highlight_red { background-color: #f87171; }
-  &.highlight_blue { background-color: #60a5fa; }
-  &.highlight_green { background-color: #34d399; }
-  &.highlight_purple { background-color: #a78bfa; }
-  &.highlight_pink { background-color: #f472b6; }
-  &.highlight_orange { background-color: #fb923c; }
-  &.highlight_cyan { background-color: #22d3ee; }
+  &.highlight_yellow { background-color: $highlight-yellow; }
+  &.highlight_red { background-color: $highlight-red; }
+  &.highlight_blue { background-color: $highlight-blue; }
+  &.highlight_green { background-color: $highlight-green; }
+  &.highlight_purple { background-color: $highlight-purple; }
+  &.highlight_pink { background-color: $highlight-pink; }
+  &.highlight_orange { background-color: $highlight-orange; }
+  &.highlight_cyan { background-color: $highlight-cyan; }
 }
 
 .annotation-content {
