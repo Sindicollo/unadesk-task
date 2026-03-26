@@ -1,7 +1,7 @@
 @use '../../../styles/variables' as *;
 
 .article-view-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: $spacing-xl;
   position: relative;
@@ -68,15 +68,6 @@
       background-color: $secondary-hover;
     }
   }
-
-  &.btn-danger {
-    background-color: $danger;
-    color: $danger-text;
-
-    &:hover {
-      background-color: $danger-hover;
-    }
-  }
 }
 
 .article-meta {
@@ -88,6 +79,13 @@
 .date {
   font-size: $font-sm;
   color: $text-light;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: $spacing-2xl;
+  align-items: start;
 }
 
 .content-wrapper {
@@ -199,11 +197,11 @@
 }
 
 .annotations-panel {
-  margin-top: $spacing-3xl;
   background: $background;
   border: 1px solid $border;
   border-radius: $radius-lg;
   padding: $spacing-xl;
+  align-self: stretch;
 
   h3 {
     margin: 0 0 $spacing-lg 0;
@@ -262,155 +260,13 @@
   color: $text-light;
 }
 
-// Annotation dialog
-.annotation-dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001;
-}
-
-.annotation-dialog {
-  background: white;
-  border-radius: $radius-lg;
-  padding: $spacing-2xl;
-  width: 100%;
-  max-width: 450px;
-  box-shadow: $shadow-lg;
-}
-
-.dialog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $spacing-xl;
-
-  h3 {
-    margin: 0;
-    font-size: $font-xl;
-    color: $text-primary;
-  }
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: $text-light;
-  cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: $radius-sm;
-  transition: background-color $transition-normal, color $transition-normal;
-
-  &:hover {
-    background-color: $secondary;
-    color: $text-primary;
-  }
-}
-
-.form-group {
-  margin-bottom: $spacing-2xl;
-
-  label {
-    display: block;
-    font-size: $font-md;
-    font-weight: 500;
-    color: $text-secondary;
-    margin-bottom: $spacing-sm;
-  }
-}
-
-.color-dropdown {
-  display: flex;
-  align-items: center;
-  gap: $spacing-md;
-  margin-bottom: $spacing-md;
-}
-
-.color-select {
-  flex: 1;
-  padding: $spacing-md;
-  border: 1px solid $border;
-  border-radius: $radius-md;
-  font-size: $font-md;
-  font-family: inherit;
-  cursor: pointer;
-  background: white;
-}
-
-.color-preview {
-  width: 40px;
-  height: 40px;
-  border-radius: $radius-md;
-  border: 1px solid $border;
-  flex-shrink: 0;
-
-  &.highlight_yellow { background-color: #fbbf24; }
-  &.highlight_red { background-color: #f87171; }
-  &.highlight_blue { background-color: #60a5fa; }
-  &.highlight_green { background-color: #34d399; }
-  &.highlight_purple { background-color: #a78bfa; }
-  &.highlight_pink { background-color: #f472b6; }
-  &.highlight_orange { background-color: #fb923c; }
-  &.highlight_cyan { background-color: #22d3ee; }
-}
-
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-sm;
-}
-
-.color-swatch {
-  width: 100%;
-  aspect-ratio: 1;
-  border: 2px solid transparent;
-  border-radius: $radius-md;
-  cursor: pointer;
-  transition: transform $transition-fast, border-color $transition-normal;
-
-  &:hover {
-    transform: scale(1.05);
+// Responsive
+@media (max-width: 900px) {
+  .main-content {
+    grid-template-columns: 1fr;
   }
 
-  &.selected {
-    border-color: $text-primary;
-    transform: scale(1.05);
-  }
-
-  &.highlight_yellow { background-color: #fbbf24; }
-  &.highlight_red { background-color: #f87171; }
-  &.highlight_blue { background-color: #60a5fa; }
-  &.highlight_green { background-color: #34d399; }
-  &.highlight_purple { background-color: #a78bfa; }
-  &.highlight_pink { background-color: #f472b6; }
-  &.highlight_orange { background-color: #fb923c; }
-  &.highlight_cyan { background-color: #22d3ee; }
-}
-
-.annotation-actions {
-  margin-bottom: $spacing-xl;
-  padding-bottom: $spacing-xl;
-  border-bottom: 1px solid $border;
-}
-
-.dialog-actions {
-  display: flex;
-  gap: $spacing-md;
-
-  .btn {
-    flex: 1;
-    justify-content: center;
+  .annotations-panel {
+    order: -1;
   }
 }

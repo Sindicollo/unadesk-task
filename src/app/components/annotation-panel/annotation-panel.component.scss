@@ -1,0 +1,226 @@
+@use '../../../styles/variables' as *;
+
+.annotation-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background: white;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  transition: right $transition-normal;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  &.open {
+    right: 0;
+  }
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xl;
+  border-bottom: 1px solid $border;
+
+  h3 {
+    margin: 0;
+    font-size: $font-lg;
+    color: $text-primary;
+  }
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: $text-light;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  transition: background-color $transition-normal, color $transition-normal;
+
+  &:hover {
+    background-color: $secondary;
+    color: $text-primary;
+  }
+}
+
+.panel-content {
+  flex: 1;
+  padding: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2xl;
+  overflow-y: auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  label {
+    font-size: $font-md;
+    font-weight: 500;
+    color: $text-secondary;
+  }
+}
+
+.color-dropdown {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.color-select {
+  flex: 1;
+  padding: $spacing-md;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  font-size: $font-md;
+  font-family: inherit;
+  cursor: pointer;
+  background: white;
+}
+
+.color-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  border: 1px solid $border;
+  flex-shrink: 0;
+
+  &.highlight_yellow { background-color: #fbbf24; }
+  &.highlight_red { background-color: #f87171; }
+  &.highlight_blue { background-color: #60a5fa; }
+  &.highlight_green { background-color: #34d399; }
+  &.highlight_purple { background-color: #a78bfa; }
+  &.highlight_pink { background-color: #f472b6; }
+  &.highlight_orange { background-color: #fb923c; }
+  &.highlight_cyan { background-color: #22d3ee; }
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+}
+
+.color-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: transform $transition-fast, border-color $transition-normal;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &.selected {
+    border-color: $text-primary;
+    transform: scale(1.05);
+  }
+
+  &.highlight_yellow { background-color: #fbbf24; }
+  &.highlight_red { background-color: #f87171; }
+  &.highlight_blue { background-color: #60a5fa; }
+  &.highlight_green { background-color: #34d399; }
+  &.highlight_purple { background-color: #a78bfa; }
+  &.highlight_pink { background-color: #f472b6; }
+  &.highlight_orange { background-color: #fb923c; }
+  &.highlight_cyan { background-color: #22d3ee; }
+}
+
+.annotation-actions {
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $border;
+}
+
+.panel-actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: auto;
+
+  .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $font-md;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color $transition-normal, transform $transition-fast;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.btn-primary {
+    background-color: $primary;
+    color: white;
+
+    &:hover {
+      background-color: $primary-hover;
+    }
+  }
+
+  &.btn-secondary {
+    background-color: $secondary;
+    color: $text-secondary;
+
+    &:hover {
+      background-color: $secondary-hover;
+    }
+  }
+
+  &.btn-danger {
+    background-color: $danger;
+    color: $danger-text;
+    width: 100%;
+
+    &:hover {
+      background-color: $danger-hover;
+    }
+  }
+}
+
+.form-control {
+  padding: $spacing-md $spacing-lg;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  font-size: $font-md;
+  font-family: inherit;
+  transition: border-color $transition-normal, box-shadow $transition-normal;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  &.textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+  }
+}
