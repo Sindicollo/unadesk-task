@@ -158,16 +158,29 @@ export class ArticleEditorComponent implements OnInit {
       const oldAnn = oldAnnotationsMap.get(key);
 
       if (!oldAnn) {
-        this.annotationsService.create(articleId, {
-          startOffset: newAnn.startOffset,
-          endOffset: newAnn.endOffset,
-          color: newAnn.color,
-          text: newAnn.tooltip
-        });
+        // Аннотации не было — создаём новую
+        try {
+          this.annotationsService.create(articleId, {
+            startOffset: newAnn.startOffset,
+            endOffset: newAnn.endOffset,
+            color: newAnn.color,
+            text: newAnn.tooltip
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Произошла ошибка';
+          console.warn(`Не удалось создать аннотацию: ${message}`);
+          // Пропускаем аннотацию с конфликтом
+        }
       } else if (oldAnn.text !== newAnn.tooltip) {
-        this.annotationsService.update(articleId, oldAnn.id, {
-          text: newAnn.tooltip
-        });
+        // Аннотация существует, но текст подсказки изменился — обновляем
+        try {
+          this.annotationsService.update(articleId, oldAnn.id, {
+            text: newAnn.tooltip
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Произошла ошибка';
+          console.warn(`Не удалось обновить аннотацию: ${message}`);
+        }
       }
     }
 

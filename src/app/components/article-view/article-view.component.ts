@@ -131,12 +131,18 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
     const existingAnnotation = this.findAnnotationInRange(start, end);
 
     if (existingAnnotation) {
-      this.selectedAnnotation.set(existingAnnotation);
-      this.selectedColor = existingAnnotation.color;
-      this.annotationText.set(existingAnnotation.text);
-      this.showAnnotationPanel.set(true);
+      // Если выделение пересекается с существующей аннотацией —
+      // показываем предупреждение и НЕ открываем панель
+      alert(
+        'Перекрывающиеся аннотации не поддерживаются.\n\n' +
+        'Выделенный текст содержит существующую аннотацию.\n' +
+        'Для редактирования кликните непосредственно на аннотированный фрагмент.'
+      );
       this.pendingSelection = null;
+      this.selectedAnnotation.set(null);
+      window.getSelection()?.removeAllRanges();
     } else {
+      // Нет пересечений — позволяем создать новую аннотацию
       this.pendingSelection = { start, end, text: selectedText };
       this.selectedAnnotation.set(null);
       this.selectedColor = 'highlight_yellow';
@@ -187,31 +193,37 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
     const articleId = this.article()?.id;
     if (!articleId) return;
 
-    if (this.pendingSelection) {
-      const newAnnotation: NewAnnotation = {
-        startOffset: this.pendingSelection.start,
-        endOffset: this.pendingSelection.end,
-        color: this.selectedColor,
-        text: this.annotationText()
-      };
-
-      this.annotationsService.create(articleId, newAnnotation);
-      this.annotations.set(this.annotationsService.getByArticleId(articleId));
-      this.renderContent();
-    } else if (this.selectedAnnotation()) {
-      this.annotationsService.update(
-        articleId,
-        this.selectedAnnotation()!.id,
-        {
+    try {
+      if (this.pendingSelection) {
+        const newAnnotation: NewAnnotation = {
+          startOffset: this.pendingSelection.start,
+          endOffset: this.pendingSelection.end,
           color: this.selectedColor,
           text: this.annotationText()
-        }
-      );
-      this.annotations.set(this.annotationsService.getByArticleId(articleId));
-      this.renderContent();
-    }
+        };
 
-    this.closeAnnotationPanel();
+        this.annotationsService.create(articleId, newAnnotation);
+        this.annotations.set(this.annotationsService.getByArticleId(articleId));
+        this.renderContent();
+        this.closeAnnotationPanel();
+      } else if (this.selectedAnnotation()) {
+        this.annotationsService.update(
+          articleId,
+          this.selectedAnnotation()!.id,
+          {
+            color: this.selectedColor,
+            text: this.annotationText()
+          }
+        );
+        this.annotations.set(this.annotationsService.getByArticleId(articleId));
+        this.renderContent();
+        this.closeAnnotationPanel();
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Произошла ошибка';
+      alert(`Не удалось сохранить аннотацию:\n${message}`);
+      // Не закрываем панель, чтобы пользователь мог исправить данные
+    }
   }
 
   deleteAnnotation(): void {

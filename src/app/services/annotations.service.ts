@@ -1,12 +1,14 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Annotation, NewAnnotation } from '../models/annotation';
 import { getAnnotationsStorageKey } from '../constants/storage-keys';
+import { AnnotationValidatorService } from './annotation-validator.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnnotationsService {
   private annotationsSignal = signal<Map<string, Annotation[]>>(new Map());
+  private validator = new AnnotationValidatorService();
   
   readonly annotations = computed(() => this.annotationsSignal());
 
@@ -44,6 +46,15 @@ export class AnnotationsService {
   }
 
   create(articleId: string, newAnnotation: NewAnnotation): Annotation {
+    // Получаем существующие аннотации для валидации
+    const existingAnnotations = this.getByArticleId(articleId);
+
+    // Валидируем новую аннотацию
+    const validation = this.validator.validateNewAnnotation(newAnnotation, existingAnnotations);
+    if (!validation.valid) {
+      throw new Error(validation.message);
+    }
+
     const annotation: Annotation = {
       id: this.generateId(),
       startOffset: newAnnotation.startOffset,
@@ -65,26 +76,31 @@ export class AnnotationsService {
   }
 
   update(articleId: string, annotationId: string, updates: Partial<Annotation>): Annotation | null {
-    let updatedAnnotation: Annotation | null = null;
+    const existingAnnotations = this.getByArticleId(articleId);
+
+    // Валидируем обновлённую аннотацию
+    const validation = this.validator.validateUpdatedAnnotation(annotationId, updates, existingAnnotations);
+    if (!validation.valid) {
+      throw new Error(validation.message);
+    }
 
     this.annotationsSignal.update(map => {
       const newMap = new Map(map);
       const articleAnnotations = newMap.get(articleId) || [];
-      
+
       const updated = articleAnnotations.map(ann => {
         if (ann.id === annotationId) {
-          updatedAnnotation = { ...ann, ...updates };
-          return updatedAnnotation;
+          return { ...ann, ...updates };
         }
         return ann;
       });
-      
+
       newMap.set(articleId, updated);
       this.saveToStorage(articleId, updated);
       return newMap;
     });
 
-    return updatedAnnotation;
+    return this.getByArticleId(articleId).find(ann => ann.id === annotationId) || null;
   }
 
   delete(articleId: string, annotationId: string): boolean {

@@ -36,72 +36,188 @@ export class AnnotationParserService {
   /**
    * Парсит размеченный контент и возвращает чистый текст + аннотации
    * Формат: [текст](*цвет "подсказка")
+   * Предполагается, что вложенных аннотаций нет (отловлено валидатором)
    */
   parseMarkedContent(markedText: string): ParseMarkedContentResult {
     const annotations: ParsedAnnotation[] = [];
-    let result = '';
-
-    // Паттерн для поиска [текст](*цвет "подсказка")
-    // Подсказка может быть пустой или отсутствовать
-    const pattern = /\[([^\]]+)\]\(\*([\w]+)(?:\s+"([^"]*)")?\)/g;
-    let match;
-    let lastEndIndex = 0;
-
     const validColors = ['yellow', 'red', 'blue', 'green', 'purple', 'pink', 'orange', 'cyan'];
 
-    while ((match = pattern.exec(markedText)) !== null) {
-      const annotationText = match[1];
-      const colorName = match[2];
-      const tooltip = match[3] || '';
-      const start = match.index;
-      const end = pattern.lastIndex;
+    // Находим все аннотации
+    const allAnnotations = this.findAllAnnotations(markedText);
 
-      // Валидация цвета
-      if (!validColors.includes(colorName)) {
-        return { error: `Неверный цвет "${colorName}". Допустимые: ${validColors.join(', ')}` };
+    // Проверяем цвета
+    for (const ann of allAnnotations) {
+      if (!validColors.includes(ann.colorName)) {
+        return {
+          error: `Неверный цвет "${ann.colorName}". Допустимые: ${validColors.join(', ')}`
+        };
+      }
+    }
+
+    // Проверяем на пересечения
+    const overlapError = this.checkOverlapsParsed(allAnnotations);
+    if (overlapError) {
+      return { error: overlapError };
+    }
+
+    // Извлекаем чистый текст и вычисляем offset'ы
+    let pureText = '';
+    let markedIndex = 0;
+
+    // Сортируем аннотации по позиции
+    const sortedAnnotations = [...allAnnotations].sort((a, b) => a.pos - b.pos);
+
+    for (const ann of sortedAnnotations) {
+      // Добавляем текст до аннотации
+      while (markedIndex < ann.pos) {
+        pureText += markedText[markedIndex];
+        markedIndex++;
       }
 
-      // Добавляем текст до аннотации
-      result += markedText.substring(lastEndIndex, start);
-
-      // Создаём аннотацию
+      // Добавляем аннотацию
       annotations.push({
-        text: annotationText,
-        startOffset: result.length,
-        endOffset: result.length + annotationText.length,
-        color: `highlight_${colorName}`,
-        tooltip
+        text: ann.text,
+        startOffset: pureText.length,
+        endOffset: pureText.length + ann.text.length,
+        color: `highlight_${ann.colorName}`,
+        tooltip: ann.tooltip
       });
 
-      // Добавляем текст аннотации
-      result += annotationText;
-      lastEndIndex = end;
+      pureText += ann.text;
+      markedIndex = ann.endIndex;
     }
 
     // Добавляем оставшийся текст
-    result += markedText.substring(lastEndIndex);
-
-    // Проверка на незакрытые метки [
-    const openBracketPattern = /\[[^\]]*$/g;
-    if (openBracketPattern.test(markedText)) {
-      const lastBracketIndex = markedText.lastIndexOf('[');
-      const snippet = markedText.substring(lastBracketIndex, Math.min(lastBracketIndex + 30, markedText.length));
-      return { error: `Обнаружена незакрытая метка аннотации. Проверьте: [${snippet}...` };
+    while (markedIndex < markedText.length) {
+      pureText += markedText[markedIndex];
+      markedIndex++;
     }
 
-    // Проверка на метки без цвета (есть [ и ], но нет (* после ])
-    const noColorPattern = /\[[^\]]+\](?!\(\*)/g;
-    const noColorMatches = markedText.match(noColorPattern);
-    if (noColorMatches && noColorMatches.length > 0) {
-      return { error: 'Обнаружена метка без указания цвета. Формат: [текст](*цвет "подсказка")' };
+    return { text: pureText, annotations };
+  }
+
+  /**
+   * Находит все аннотации в тексте (включая вложенные)
+   */
+  private findAllAnnotations(markedText: string): Array<{
+    pos: number;
+    text: string;
+    colorName: string;
+    tooltip: string;
+    endIndex: number;
+    processed?: boolean;
+  }> {
+    const annotations: Array<{
+      pos: number;
+      text: string;
+      colorName: string;
+      tooltip: string;
+      endIndex: number;
+      processed?: boolean;
+    }> = [];
+
+    for (let i = 0; i < markedText.length; i++) {
+      if (markedText[i] === '[') {
+        const ann = this.parseAnnotation(markedText, i);
+        if (ann) {
+          annotations.push({
+            pos: i,
+            ...ann
+          });
+        }
+      }
     }
 
-    // Проверка на незакрытые скобки ()
-    const openParenPattern = /\(\*[^\)]*$/g;
-    if (openParenPattern.test(markedText)) {
-      return { error: 'Обнаружена незакрытая скобка в аннотации. Убедитесь, что все () закрыты' };
+    return annotations;
+  }
+
+  /**
+   * Проверяет аннотации на пересечения (для сырых данных)
+   */
+  private checkOverlapsParsed(annotations: Array<{ pos: number; text: string; endIndex: number }>): string | null {
+    for (let i = 0; i < annotations.length; i++) {
+      for (let j = i + 1; j < annotations.length; j++) {
+        const a = annotations[i];
+        const b = annotations[j];
+
+        // Проверяем пересечение позиций в исходной строке
+        if (a.pos < b.endIndex && a.endIndex > b.pos) {
+          return `Перекрывающиеся аннотации не поддерживаются.\n\n` +
+            `Аннотация 1: "${a.text}" [позиция ${a.pos}]\n` +
+            `Аннотация 2: "${b.text}" [позиция ${b.pos}]\n\n` +
+            `Уберите вложенные аннотации или сделайте их непересекающимися.`;
+        }
+      }
     }
 
-    return { text: result, annotations };
+    return null;
+  }
+
+  /**
+   * Парсит одну аннотацию начиная с позиции pos
+   * Возвращает null если это не аннотация
+   */
+  private parseAnnotation(markedText: string, pos: number): {
+    text: string;
+    colorName: string;
+    tooltip: string;
+    endIndex: number;
+  } | null {
+    // Ищем закрывающую скобку ] с учётом вложенности
+    let bracketCount = 1;
+    let textEnd = pos + 1;
+
+    while (textEnd < markedText.length && bracketCount > 0) {
+      if (markedText[textEnd] === '[') bracketCount++;
+      if (markedText[textEnd] === ']') bracketCount--;
+      textEnd++;
+    }
+
+    if (bracketCount !== 0) {
+      return null; // Незакрытая скобка
+    }
+
+    // Проверяем, что после ] идёт (*
+    if (markedText[textEnd] !== '(' || markedText[textEnd + 1] !== '*') {
+      return null; // Это не аннотация
+    }
+
+    // Извлекаем текст аннотации
+    const annotationText = markedText.substring(pos + 1, textEnd - 1);
+
+    // Парсим (*цвет "подсказка")
+    let colorEnd = textEnd + 2;
+    while (colorEnd < markedText.length && markedText[colorEnd] !== ' ' && markedText[colorEnd] !== ')') {
+      colorEnd++;
+    }
+
+    const colorName = markedText.substring(textEnd + 2, colorEnd);
+
+    // Проверяем, есть ли подсказка
+    let tooltip = '';
+    let endIndex = colorEnd;
+
+    if (markedText[colorEnd] === ' ') {
+      // Ожидаем "подсказка"
+      if (markedText[colorEnd + 1] === '"') {
+        const quoteEnd = markedText.indexOf('"', colorEnd + 2);
+        if (quoteEnd !== -1) {
+          tooltip = markedText.substring(colorEnd + 2, quoteEnd);
+          endIndex = quoteEnd + 1; // После закрывающей кавычки
+        }
+      }
+    }
+
+    // Пропускаем закрывающую скобку )
+    if (markedText[endIndex] === ')') {
+      endIndex++;
+    }
+
+    return {
+      text: annotationText,
+      colorName,
+      tooltip,
+      endIndex
+    };
   }
 }
