@@ -1,6 +1,6 @@
 <div class="annotation-panel" [class.open]="isOpen()">
   <div class="panel-header">
-    <h3>{{ title }}</h3>
+    <h3>{{ title() }}</h3>
     <button type="button" class="btn-close" (click)="onCancel()" title="Закрыть">×</button>
   </div>
 
@@ -60,7 +60,7 @@
         Отмена
       </button>
       <button type="button" class="btn btn-primary" (click)="onSave()">
-        {{ saveButtonText }}
+        {{ saveButtonText() }}
       </button>
     </div>
   </div>

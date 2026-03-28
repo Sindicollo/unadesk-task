@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Annotation } from '../../models/annotation';
@@ -58,11 +58,11 @@ export class AnnotationPanelComponent {
     this.delete.emit();
   }
 
-  get title(): string {
-    return this.selectedAnnotation() ? 'Редактировать аннотацию' : 'Новая аннотация';
-  }
+  readonly title = computed(() =>
+    this.selectedAnnotation() ? 'Редактировать аннотацию' : 'Новая аннотация'
+  );
 
-  get saveButtonText(): string {
-    return this.selectedAnnotation() ? 'Сохранить' : 'Создать';
-  }
+  readonly saveButtonText = computed(() =>
+    this.selectedAnnotation() ? 'Сохранить' : 'Создать'
+  );
 }
