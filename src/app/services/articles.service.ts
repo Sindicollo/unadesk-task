@@ -1,7 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Article, NewArticle } from '../models/article';
+import { STORAGE_KEYS, getAnnotationsStorageKey } from '../constants/storage-keys';
 
-const STORAGE_KEY = 'unadesk_articles';
+const STORAGE_KEY = STORAGE_KEYS.ARTICLES;
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,7 @@ export class ArticlesService {
   }
 
   private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
 
   getAll(): Article[] {
@@ -81,10 +82,9 @@ export class ArticlesService {
     if (exists) {
       this.articlesSignal.update(articles => articles.filter(article => article.id !== id));
       this.saveToStorage();
-      
+
       // Удаляем аннотации статьи
-      const annotationsKey = `unadesk_annotations_${id}`;
-      localStorage.removeItem(annotationsKey);
+      localStorage.removeItem(getAnnotationsStorageKey(id));
     }
     return exists;
   }

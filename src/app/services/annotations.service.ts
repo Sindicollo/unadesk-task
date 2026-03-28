@@ -1,7 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Annotation, NewAnnotation } from '../models/annotation';
-
-const STORAGE_PREFIX = 'unadesk_annotations_';
+import { getAnnotationsStorageKey } from '../constants/storage-keys';
 
 @Injectable({
   providedIn: 'root'
@@ -11,13 +10,9 @@ export class AnnotationsService {
   
   readonly annotations = computed(() => this.annotationsSignal());
 
-  getStorageKey(articleId: string): string {
-    return `${STORAGE_PREFIX}${articleId}`;
-  }
-
   private loadFromStorage(articleId: string): Annotation[] {
     try {
-      const data = localStorage.getItem(this.getStorageKey(articleId));
+      const data = localStorage.getItem(getAnnotationsStorageKey(articleId));
       return data ? JSON.parse(data) : [];
     } catch {
       return [];
@@ -25,7 +20,7 @@ export class AnnotationsService {
   }
 
   private saveToStorage(articleId: string, annotations: Annotation[]): void {
-    localStorage.setItem(this.getStorageKey(articleId), JSON.stringify(annotations));
+    localStorage.setItem(getAnnotationsStorageKey(articleId), JSON.stringify(annotations));
   }
 
   private generateId(): string {
@@ -121,6 +116,6 @@ export class AnnotationsService {
       newMap.delete(articleId);
       return newMap;
     });
-    localStorage.removeItem(this.getStorageKey(articleId));
+    localStorage.removeItem(getAnnotationsStorageKey(articleId));
   }
 }

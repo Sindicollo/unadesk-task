@@ -78,14 +78,14 @@
 }
 
 .article-card {
+  display: flex;
+  flex-direction: column;
   background: white;
   border: 1px solid $border;
   border-radius: $radius-lg;
   padding: $spacing-xl;
   box-shadow: $shadow-sm;
   transition: box-shadow $transition-normal;
-  display: flex;
-  flex-direction: column;
   min-height: 280px;
 
   &:hover {
