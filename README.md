@@ -2,6 +2,16 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.21.
 
+## Примечание о создании аннотаций
+
+Я решил, что аннотации будут использовать свой язык разметки, вдохновленный Markdown.
+Аннотации сейчас можно покрасить в 8 предопределенных цветов и добавить к ним текст для показа в тултипе.
+Формат в режиме редактирования выглядит так:
+```
+Однажды [в студеную](*red "Мороз -30") зимнююю пору
+```
+В режиме просмотра это конвертируется в раскрашенный текст с тултипом "Мороз -30"
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
