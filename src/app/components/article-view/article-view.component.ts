@@ -40,6 +40,8 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
   // Tooltip
   activeTooltip: Annotation | null = null;
   tooltipPosition = { x: 0, y: 0 };
+  private currentHighlight: HTMLElement | null = null;
+  private scrollHandler: (() => void) | null = null;
 
   ngOnInit(): void {
     const articleId = this.route.snapshot.paramMap.get('id');
@@ -63,6 +65,7 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.removeScrollListener();
   }
 
   renderContent(): void {
@@ -255,7 +258,7 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
 
   onContentMouseOver(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    const highlight = target.closest('.highlight');
+    const highlight = target.closest('.highlight') as HTMLElement | null;
 
     if (!highlight) return;
 
@@ -264,18 +267,41 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
 
     const annotation = this.annotations().find(ann => ann.id === annotationId);
     if (annotation) {
-      const rect = highlight.getBoundingClientRect();
+      this.currentHighlight = highlight;
+      this.updateTooltipPosition(highlight);
       this.activeTooltip = annotation;
-      this.tooltipPosition = {
-        x: rect.left + rect.width / 2,
-        y: rect.top - 10
-      };
+      this.addScrollListener();
+    }
+  }
+
+  private updateTooltipPosition(highlight: HTMLElement): void {
+    const rect = highlight.getBoundingClientRect();
+    this.tooltipPosition = {
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10
+    };
+  }
+
+  private addScrollListener(): void {
+    this.removeScrollListener();
+    this.scrollHandler = () => {
+      if (this.currentHighlight && this.activeTooltip) {
+        this.updateTooltipPosition(this.currentHighlight);
+      }
+    };
+    window.addEventListener('scroll', this.scrollHandler, { passive: true });
+  }
+
+  private removeScrollListener(): void {
+    if (this.scrollHandler) {
+      window.removeEventListener('scroll', this.scrollHandler);
+      this.scrollHandler = null;
     }
   }
 
   onContentMouseOut(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    const highlight = target.closest('.highlight');
+    const highlight = target.closest('.highlight') as HTMLElement | null;
 
     if (!highlight) return;
 
@@ -286,5 +312,7 @@ export class ArticleViewComponent implements OnInit, OnDestroy {
     }
 
     this.activeTooltip = null;
+    this.currentHighlight = null;
+    this.removeScrollListener();
   }
 }
