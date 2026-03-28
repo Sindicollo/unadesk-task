@@ -6,6 +6,7 @@ import { ArticlesService } from '../../services/articles.service';
 import { AnnotationsService } from '../../services/annotations.service';
 import { AnnotationParserService } from '../../services/annotation-parser.service';
 import { Annotation } from '../../models/annotation';
+import { ParsedAnnotation } from '../../models/annotation-parser';
 
 @Component({
   selector: 'app-article-editor',
@@ -102,19 +103,12 @@ export class ArticleEditorComponent implements OnInit {
         content: plainText
       });
 
-      // Удаляем старые аннотации и создаём новые
+      // Получаем старые аннотации
       const oldAnnotations = this.annotationsService.getByArticleId(this.articleId);
-      for (const oldAnn of oldAnnotations) {
-        this.annotationsService.delete(this.articleId, oldAnn.id);
-      }
-      for (const newAnn of newAnnotations) {
-        this.annotationsService.create(this.articleId, {
-          startOffset: newAnn.startOffset,
-          endOffset: newAnn.endOffset,
-          color: newAnn.color,
-          text: newAnn.tooltip
-        });
-      }
+
+      // Сравниваем и обновляем только изменённые аннотации
+      this.syncAnnotations(this.articleId, oldAnnotations, newAnnotations);
+
       // Обновляем оригинальные значения после сохранения
       this.originalTitle = this.title();
       this.originalContentMarks = this.contentWithMarks();
@@ -138,5 +132,65 @@ export class ArticleEditorComponent implements OnInit {
     }
 
     this.router.navigate(['/article', this.articleId]);
+  }
+
+  /**
+   * Синхронизирует аннотации: создаёт новые, обновляет изменённые, удаляет удалённые
+   */
+  private syncAnnotations(
+    articleId: string,
+    oldAnnotations: Annotation[],
+    newAnnotations: ParsedAnnotation[]
+  ): void {
+    // Словарь для быстрого поиска старых аннотаций по ключу (startOffset-endOffset-color)
+    const oldAnnotationsMap = new Map<string, Annotation>();
+    for (const oldAnn of oldAnnotations) {
+      const key = this.getAnnotationKey(oldAnn);
+      oldAnnotationsMap.set(key, oldAnn);
+    }
+
+    const newAnnotationKeys = new Set<string>();
+
+    for (const newAnn of newAnnotations) {
+      const key = this.getAnnotationKeyFromParsed(newAnn);
+      newAnnotationKeys.add(key);
+
+      const oldAnn = oldAnnotationsMap.get(key);
+
+      if (!oldAnn) {
+        this.annotationsService.create(articleId, {
+          startOffset: newAnn.startOffset,
+          endOffset: newAnn.endOffset,
+          color: newAnn.color,
+          text: newAnn.tooltip
+        });
+      } else if (oldAnn.text !== newAnn.tooltip) {
+        this.annotationsService.update(articleId, oldAnn.id, {
+          text: newAnn.tooltip
+        });
+      }
+    }
+
+    // Удаляем аннотации, которых нет в новом списке
+    for (const oldAnn of oldAnnotations) {
+      const key = this.getAnnotationKey(oldAnn);
+      if (!newAnnotationKeys.has(key)) {
+        this.annotationsService.delete(articleId, oldAnn.id);
+      }
+    }
+  }
+
+  /**
+   * Создаёт уникальный ключ для аннотации на основе её параметров
+   */
+  private getAnnotationKey(annotation: Annotation): string {
+    return `${annotation.startOffset}-${annotation.endOffset}-${annotation.color}`;
+  }
+
+  /**
+   * Создаёт уникальный ключ для распарсенной аннотации
+   */
+  private getAnnotationKeyFromParsed(annotation: ParsedAnnotation): string {
+    return `${annotation.startOffset}-${annotation.endOffset}-${annotation.color}`;
   }
 }
